@@ -13,18 +13,26 @@
     </style>
     <script>
 
-        function initMap() {
+        var pos = null;
+        var haight = null;
+        var directionsService = null;
+        var directionsDisplay = null;
 
+        function initMap() {
+            haight = new google.maps.LatLng(37.7699298, -122.4469157);
             //Set up Map
-            let map = new google.maps.Map(document.getElementById('map'), {
+            var map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 39.8283, lng: -98.5795},
                 zoom: 5
             });
+            
+            directionsService = new google.maps.DirectionsService();
+            directionsDisplay = new google.maps.DirectionsRenderer();
 
             // Geolocation to find current location
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    var pos = {
+                    pos = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                     };
@@ -34,6 +42,7 @@
                     });
                     map.setCenter(pos);
                     map.setZoom(15);
+                    calculateRoute();
                 }, function() {
                     handleLocationError(true, infoWindow, map.getCenter());
                 });
@@ -41,6 +50,8 @@
                 // Browser doesn't support Geolocation
                 handleLocationError(false, infoWindow, map.getCenter());
             }
+            
+            directionsDisplay.setMap(map);
 
 
 
@@ -54,12 +65,22 @@
             infoWindow.open(map);
         }
 
+        
 
 
 
-
-
-
+            function calculateRoute() {
+                var request = {
+                    origin: pos,
+                    destination: haight,
+                    travelMode: 'WALKING'
+                };
+                directionsService.route(request, function(response, status) {
+                    if (status == 'OK') {
+                        directionsDisplay.setDirections(response);
+                    }
+                });
+            }
 
 
 
@@ -81,8 +102,6 @@
 </head>
 <body>
     <h1>Find Me Water</h1>
-    <!--Find Location Button goes here-->
-    <button onclick="getLocation()">Find Water</button>
     <!--Error Message goes here-->
     <p id="error"></p>
     <!--This is where the Map goes-->
