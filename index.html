@@ -19,6 +19,7 @@
         var wayPoint = null;
         var directionsService = null;
         var directionsDisplay = null;
+        var APIKEY = null;
         
 
         //Initializes the map and centers on your location after asking for permissions
@@ -96,7 +97,7 @@
             water.src = "https://maps.googleapis.com/maps/api/staticmap?scale=2&center=" + coordinates 
             +"&zoom=10&size=1024x256&sensor=false&visual_refresh=true&style=element:labels|visibility:off"
             +"&style=feature:water|color:0x00FF00&style=feature:transit|visibility:off&style=feature:poi|visibility:off"
-            +"&style=feature:road|visibility:off&style=feature:administrative|visibility:off&key=AIzaSyBnb9Nw6wuKZNM-MZQ7auUG_vpWsRLpR20";
+            +"&style=feature:road|visibility:off&style=feature:administrative|visibility:off&key="+APIKEY;
 
             water.onload = function(){
                 // Put the water image inside the water canvas
@@ -125,7 +126,7 @@
 
     </script>
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnb9Nw6wuKZNM-MZQ7auUG_vpWsRLpR20&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=" + APIKEY + "&callback=initMap">
     </script>
     
 </head>
