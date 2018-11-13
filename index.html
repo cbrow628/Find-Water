@@ -3,7 +3,7 @@
     <title>FindMeWater</title>
     <style>
         #map {
-          height: 100%;
+          height: 80%;
         }
         html, body {
           height: 100%;
@@ -14,6 +14,7 @@
     <script>
 
         var currentPosition = null;
+        var coordinates = null;
         var nearestWaterSource = null;
         var haight = null;
         var directionsService = null;
@@ -37,12 +38,15 @@
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                     };
+                    coordinates = position.coords.latitude+", "+position.coords.longitude;
                     var marker = new google.maps.Marker({
                         position:{lat: position.coords.latitude,lng: position.coords.longitude},
                         map:map
                     });
                     map.setCenter(currentPosition);
                     map.setZoom(15);
+                    createWaterLayer();
+                    var waterLocation = pixelSearch();
                     calculateRoute();
                 }, function() {
                     handleLocationError(true, infoWindow, map.getCenter());
@@ -63,10 +67,6 @@
             infoWindow.open(map);
         }
 
-        
-
-
-
         function calculateRoute() {
             var request = {
                 origin: currentPosition,
@@ -85,11 +85,45 @@
 
 
 
+
+        function createWaterLayer(){
+            // Create an in-memory canvas and store its 2d context
+            //waterLayer = document.createElement('canvas');
+            //waterLayer.setAttribute('width', 1024);
+            //waterLayer.setAttribute('height', 256);
+            //waterLayer = waterLayer.getContext('2d');
+            var waterLayer = document.getElementById('watercanvas').getContext('2d');
+
+            var water = new Image();
+            water.crossOrigin = 'https://maps.googleapis.com/crossdomain.xml';
+            water.src = "https://maps.googleapis.com/maps/api/staticmap?scale=2&center=" + coordinates 
+            +"&zoom=10&size=1024x256&sensor=false&visual_refresh=true&style=element:labels|visibility:off"
+            +"&style=feature:water|color:0x00FF00&style=feature:transit|visibility:off&style=feature:poi|visibility:off"
+            +"&style=feature:road|visibility:off&style=feature:administrative|visibility:off&key=AIzaSyBoFb9BdIMmK3DXpa24-arSgphy0O7jA0k";
+
+            water.onload = function(){
+                // Put the water image inside the water canvas
+                waterLayer.drawImage(water, 0, 0, 1024, 256);
+                
+            }
+        }
+
+
+        //To Do.....
+        function pixelSearch(){
+            //Figure out searching within a radius
+            var pixels = true;
+            if(color_is_water(pixels)){
+                return true;
+            }
+            
+        }
+
         function color_is_water(bytes){
             // Return true if the color is #00FF00 (Lime Green passed to Google Maps as water style property)
-            var water_color_bytes = [0, 255, 0],
-            our_color_bytes = [bytes[0], bytes[1], bytes[2]];
-            return _.isEqual(water_color_bytes, our_color_bytes);
+            let water_color_bytes = [0, 255, 0];
+            let our_color_bytes = [bytes[0], bytes[1], bytes[2]];
+            return (water_color_bytes == our_color_bytes) ? true : false;
         }
 
 
@@ -97,6 +131,7 @@
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoFb9BdIMmK3DXpa24-arSgphy0O7jA0k&callback=initMap">
     </script>
+    
 </head>
 <body>
     <h1>Find Me Water</h1>
@@ -104,5 +139,6 @@
     <p id="error"></p>
     <!--This is where the Map goes-->
     <div id="map"></div>
+    <canvas id="watercanvas" width="1024" height="256">
 
 </body>
